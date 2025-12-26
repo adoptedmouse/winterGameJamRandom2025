@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 6f;
     public float jumpForce = 7f;
     public float airControlMultiplier = 0.5f;
+    public float rotationSpeed = 10f;
 
     Rigidbody rb;
     PlayerInput input;
@@ -29,6 +30,17 @@ public class PlayerMovement : MonoBehaviour
 
         float control = grounded.IsGrounded ? 1f : airControlMultiplier;
         rb.AddForce(velocityChange * control, ForceMode.VelocityChange);
+        
+        if (moveDir.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            Quaternion newRotation = Quaternion.Slerp(
+                rb.rotation,
+                targetRotation,
+                rotationSpeed * Time.fixedDeltaTime
+            );
+            rb.MoveRotation(newRotation);
+        }
 
         if (input.JumpPressed && grounded.IsGrounded)
         {
