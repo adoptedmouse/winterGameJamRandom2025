@@ -6,6 +6,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
+/[Pp]rojectSettings/
+/[Uu]serSettings/
 
 # Visual Studio / MonoDevelop generated
 .vs/
