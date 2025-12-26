@@ -15,6 +15,7 @@ public class ChaosManager : MonoBehaviour
     public PhysicsMaterial[] randomMaterials;
 
     [Header("Timing Settings")]
+    [Tooltip("Frequency of chaos events in seconds")]
     public float chaosFrequency = 5f; // Frequency of chaos events in seconds
     public float chaosDuration = 2f;  // Duration of each chaos event in seconds
 
