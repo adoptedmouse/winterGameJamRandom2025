@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PixelRect:
     serializedVersion: 2
-    x: 1
-    y: 51
+    x: 229
+    y: 253
     width: 1918
     height: 980
   m_ShowMode: 4
@@ -437,6 +437,20 @@ MonoBehaviour:
       layout: 4
       size: {x: 0, y: 0}
       sizeOverridden: 0
+    - dockPosition: 0
+      containerId: overlay-toolbar__top
+      displayed: 1
+      id: Services/Unity Version Control
+      index: 6
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      floating: 0
+      collapsed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverridden: 0
     - dockPosition: 1
       containerId: overlay-toolbar__top
       displayed: 1
@@ -563,20 +577,6 @@ MonoBehaviour:
       layout: 4
       size: {x: 0, y: 0}
       sizeOverridden: 0
-    - dockPosition: 0
-      containerId: overlay-toolbar__top
-      displayed: 1
-      id: Services/Unity Version Control
-      index: 6
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
-      floating: 0
-      collapsed: 0
-      snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 0
-      layout: 4
-      size: {x: 0, y: 0}
-      sizeOverridden: 0
     m_ContainerData:
     - containerId: overlay-toolbar__top
       scrollOffset: 0
@@ -658,9 +658,13 @@ MonoBehaviour:
       m_Data: 49332
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 49042
-    - m_Data: 49044
-    - m_Data: 49046
+    - m_Data: 79850
+    - m_Data: 79852
+    - m_Data: 79854
+    - m_Data: 79856
+    - m_Data: 79858
+    - m_Data: 79860
+    - m_Data: 79862
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -693,9 +697,13 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 49042
-    - m_Data: 49044
-    - m_Data: 49046
+    - m_Data: 79850
+    - m_Data: 79852
+    - m_Data: 79854
+    - m_Data: 79856
+    - m_Data: 79858
+    - m_Data: 79860
+    - m_Data: 79862
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1434,13 +1442,13 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 2.254529, y: 0.15986912, z: -3.386639}
+    m_Target: {x: 15.566109, y: 12.286776, z: -0.46569693}
     speed: 2
-    m_Value: {x: -1.7270273, y: -0.59318095, z: 7.1240788}
+    m_Value: {x: 2.254529, y: 0.15986912, z: -3.386639}
   m_RenderMode: 0
   m_CameraMode:
-    drawMode: 0
-    name: Shaded
+    drawMode: 2
+    name: Shaded Wireframe
     section: Shading Mode
   m_ValidateTrueMetals: 0
   m_DoValidateTrueMetals: 0
@@ -1482,11 +1490,11 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.26249543, y: -0.03704565, z: 0.010084254, w: -0.9641637}
+    m_Target: {x: 0.2553751, y: -0.7070022, z: 0.31131876, w: 0.58180654}
     speed: 2
-    m_Value: {x: -0.3086087, y: -0.020831987, z: 0.0067594806, w: -0.9509312}
+    m_Value: {x: -0.26249543, y: -0.03704565, z: 0.010084254, w: -0.9641637}
   m_Size:
-    m_Target: 10
+    m_Target: 9.25953
     speed: 2
     m_Value: 10
   m_Ortho:

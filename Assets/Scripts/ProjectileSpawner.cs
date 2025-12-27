@@ -79,15 +79,14 @@ public class ProjectileSpawner : MonoBehaviour
     }
 
     //Visualize Gizmo --  draws line to player in editor to see targeting
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
-        if (target != null)
+        // Check if debug HUD is enabled and spawner gizmos should show
+        if (ChaosDebugHUD.Instance != null && ChaosDebugHUD.Instance.showSpawnerGizmos && target != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, target.position);
+            Gizmos.DrawWireSphere(transform.position, 0.5f);
         }
     }
 }
-
-
-
