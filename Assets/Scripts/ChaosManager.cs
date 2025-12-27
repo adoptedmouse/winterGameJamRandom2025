@@ -1,87 +1,203 @@
 using System.Collections;
 using UnityEngine;
 
+// central chaos controller that manages both player and object chaos events
+// triggers them separately at different intervals for maximum chaos
 public class ChaosManager : MonoBehaviour
 {
-    private PhysicsMaterial currentMaterial;
-    private float nextChaosTime;
-    private float chaosEndTime;
-
-    [Header("Chaos Settings")] // FIXED: Added missing closing bracket ]
-    // Drag the "CHAOS" object here from the inspector
-    public Collider floorCollider;
-
-    // Drag the materials to be used for randomization here from the inspector
-    public PhysicsMaterial[] randomMaterials;
-
-    [Header("Timing Settings")]
-    [Tooltip("Frequency of chaos events in seconds")]
-    public float chaosFrequency = 5f; // Frequency of chaos events in seconds
-    public float chaosDuration = 2f;  // Duration of each chaos event in seconds
-
-    private PhysicsMaterial originalMaterial; // Variable to store the normal floor material
-
+    [Header("Chaos Frequency")]
+    [Tooltip("how often player chaos triggers (seconds)")]
+    public float playerChaosFrequency = 10f;
+    [Tooltip("how often object chaos triggers (seconds)")]
+    public float objectChaosFrequency = 8f;
+    
+    [Header("References")]
+    [Tooltip("drag your player GameObject here")]
+    public PlayerChaos playerChaos;
+    [Tooltip("HUD will be found automatically if not assigned")]
+    public GameHUD gameHUD;
+    
+    [Header("Debug")]
+    public bool debugMode = true;
+    
+    // cached references
+    private ChaosObject[] chaosObjects;
+    
     void Start()
     {
-        nextChaosTime = Time.time + chaosFrequency;
-        // 1. Safety Check: Make sure we have a collider
-        if (floorCollider == null)
+        // find GameHUD if not assigned
+        if (gameHUD == null)
         {
-            Debug.LogError("ChaosManager: No Floor Collider assigned!");
-            return;
+            gameHUD = FindObjectOfType<GameHUD>();
         }
-
-        // 2. Save the original material so we can restore it later
-        originalMaterial = floorCollider.sharedMaterial;
-
-        // 3. Start the chaos loop
-        StartCoroutine(ChaosLoop());
+        
+        // find player chaos if not assigned
+        if (playerChaos == null)
+        {
+            playerChaos = FindObjectOfType<PlayerChaos>();
+        }
+        
+        // find all chaos objects in scene
+        RefreshChaosObjects();
+        
+        // start the chaos loops
+        StartCoroutine(PlayerChaosLoop());
+        StartCoroutine(ObjectChaosLoop());
+        
+        if (debugMode)
+        {
+            Debug.Log($"chaos manager: initialized with {chaosObjects.Length} chaos objects");
+        }
     }
-
-    IEnumerator ChaosLoop()
+    
+    /// find all ChaosObject components in the scene
+    /// call this we spawn new objects during gameplay
+    public void RefreshChaosObjects()
     {
+        chaosObjects = FindObjectsOfType<ChaosObject>();
+        if (debugMode)
+        {
+            Debug.Log($"chaos manager: found {chaosObjects.Length} chaos objects");
+        }
+    }
+    
+    // ===== PLAYER CHAOS LOOP =====
+    
+    IEnumerator PlayerChaosLoop()
+    {
+        // initial delay before first event
+        yield return new WaitForSeconds(playerChaosFrequency);
+        
         while (true)
         {
-            // Wait for the chaos frequency
-            yield return new WaitForSeconds(chaosFrequency);
-
-            // Safety Check: Ensure we have materials to pick from
-            if (randomMaterials.Length > 0)
+            // trigger player chaos
+            if (playerChaos != null)
             {
-                // Apply a random material to the floor
-                PhysicsMaterial selectedMaterial = randomMaterials[Random.Range(0, randomMaterials.Length)];
-                floorCollider.sharedMaterial = selectedMaterial;
-
-                // Debug log the current material applied to the floor
-                Debug.Log("Chaos material applied: " + selectedMaterial.name);
+                playerChaos.TriggerRandomEffect();
+                
+                if (debugMode)
+                {
+                    Debug.Log("chaos manager: player chaos triggered");
+                }
             }
-
-            // Wait for the chaos duration
-            yield return new WaitForSeconds(chaosDuration);
-
-            // Reset the floor material to its ORIGINAL state (instead of null)
-            floorCollider.sharedMaterial = originalMaterial;
-            Debug.Log("Chaos ended. Material restored.");
+            else
+            {
+                Debug.LogWarning("chaos manager: playerChaos reference missing!");
+            }
+            
+            // wait for next player chaos event
+            yield return new WaitForSeconds(playerChaosFrequency);
         }
     }
-
-    void Update()
-{
-    if (ChaosDebugHUD.Instance == null) return;
-
-    bool chaosActive = currentMaterial != null;
-    float t = Time.time;
-
-    if (!chaosActive)
+    
+    // ===== OBJECT CHAOS LOOP =====
+    
+    IEnumerator ObjectChaosLoop()
     {
-        float remaining = Mathf.Max(0f, nextChaosTime - t);
-        ChaosDebugHUD.Instance.SetLine($"Chaos: OFF\nNext in: {remaining:0.0}s\nMaterial: {originalMaterial?.name ?? "None"}");
+        // initial delay before first event (offset from player)
+        yield return new WaitForSeconds(objectChaosFrequency * 0.5f);
+        
+        while (true)
+        {
+            // trigger chaos on all objects independently
+            TriggerObjectChaos();
+            
+            // wait for next object chaos event
+            yield return new WaitForSeconds(objectChaosFrequency);
+        }
     }
-    else
-    {
-        float remaining = Mathf.Max(0f, chaosEndTime - t);
-        ChaosDebugHUD.Instance.SetLine($"Chaos: ON\nEnds in: {remaining:0.0}s\nMaterial: {currentMaterial.name}");
-    }
-}
+    
+    // trigger chaos on all ChaosObjects in the scene
 
+    void TriggerObjectChaos()
+    {
+        if (chaosObjects == null || chaosObjects.Length == 0)
+        {
+            if (debugMode)
+            {
+                Debug.Log("chaos manager: no chaos objects found");
+            }
+            return;
+        }
+        
+        int triggeredCount = 0;
+        
+        // tell each object to trigger (they'll pick their own effect)
+        foreach (ChaosObject obj in chaosObjects)
+        {
+            if (obj != null)
+            {
+                obj.TriggerRandomEffect();
+                triggeredCount++;
+            }
+        }
+        
+        // notify HUD
+        if (gameHUD != null)
+        {
+            gameHUD.ShowChaosEffect("WORLD CHAOS!");
+        }
+        
+        if (debugMode)
+        {
+            Debug.Log($"chaos manager: triggered {triggeredCount} chaos objects");
+        }
+    }
+    
+    // manually trigger player chaos
+    public void ManualTriggerPlayerChaos()
+    {
+        if (playerChaos != null)
+        {
+            playerChaos.TriggerRandomEffect();
+        }
+    }
+    
+    // manually trigger object chaos
+    public void ManualTriggerObjectChaos()
+    {
+        TriggerObjectChaos();
+    }
+    
+    // stop all chaos effects
+    public void StopAllChaos()
+    {
+        StopAllCoroutines();
+        
+        // force end player effect
+        if (playerChaos != null)
+        {
+            playerChaos.ForceEndEffect();
+        }
+        
+        // force end all object effects
+        if (chaosObjects != null)
+        {
+            foreach (ChaosObject obj in chaosObjects)
+            {
+                if (obj != null)
+                {
+                    obj.ForceEndEffect();
+                }
+            }
+        }
+        
+        if (debugMode)
+        {
+            Debug.Log("chaos manager: all chaos stopped");
+        }
+    }
+    
+    // restart chaos loops (after stopping)
+    public void RestartChaos()
+    {
+        StopAllCoroutines();
+        StartCoroutine(PlayerChaosLoop());
+        StartCoroutine(ObjectChaosLoop());
+        
+        if (debugMode)
+        {
+            Debug.Log("chaos manager: chaos restarted");
+        }
+    }
 }

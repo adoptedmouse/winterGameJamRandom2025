@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-//test test test
 
 public class ProjectileSpawner : MonoBehaviour
 {
