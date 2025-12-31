@@ -3,10 +3,28 @@
   <component name="ChangeListManager">
     <list default="true" id="13201c45-af61-4330-ac0e-6fa7364c65fd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.winterGameJamRandom2025/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.winterGameJamRandom2025/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/rubber_tuck_toy/rubber_duck_toy_4k.blend.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Models/rubber_tuck_toy/rubber_duck_toy_4k.blend.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/PlayerWithAniamtions.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/PlayerWithAniamtions.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animations/PlayerAnimations.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animations/PlayerAnimations.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Fall01.fbx.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Fall01.fbx.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Animations/Materials/HumanAnimations_Dummy-Orange.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Animations/Materials/HumanAnimations_Dummy-Orange.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Blue.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Blue.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Green.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Green.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Orange.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Orange.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Purple.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Purple.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Red.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Red.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Yellow.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Materials/HumanDummy_Yellow.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Textures/HumanCharacterDummy_ColorPalette.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Kevin Iglesias/Human Character Dummy/Textures/HumanCharacterDummy_ColorPalette.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Controllertesting.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Controllertesting.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ChaosDebugHUD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ChaosDebugHUD.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerGrounded.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerGrounded.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerMovement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ProjectileSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ProjectileSpawner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-6000.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-6000.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +49,8 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;PlayerMovement-branch&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -82,6 +101,12 @@
       <option name="presentableId" value="Default" />
       <updated>1766362489037</updated>
       <workItem from="1766362491110" duration="3389000" />
+      <workItem from="1766864603431" duration="7647000" />
+      <workItem from="1766963747917" duration="15727000" />
+      <workItem from="1767027576354" duration="4463000" />
+      <workItem from="1767134126929" duration="10892000" />
+      <workItem from="1767164193889" duration="774000" />
+      <workItem from="1767206131456" duration="716000" />
     </task>
     <servers />
   </component>
