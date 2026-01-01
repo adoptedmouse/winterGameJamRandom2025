@@ -1,6 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum ChaosFrequency
+{
+    None,           // No chaos objects
+    All,            // Every spawned object is a chaos object
+    EveryOther,     // Alternating pattern
+    Random50,       // 50% chance
+    Random25,       // 25% chance
+    Random75        // 75% chance
+}
 
 public class ProjectileSpawner : MonoBehaviour
 {
@@ -25,13 +34,27 @@ public class ProjectileSpawner : MonoBehaviour
     [Tooltip("The target the projectiles will aim for")]
     public Transform target;
 
+    [Header("Chaos Settings")]
+    [Tooltip("How often spawned objects should be chaos objects")]
+    public ChaosFrequency chaosFrequency = ChaosFrequency.None;
+    
+    [Tooltip("Chaos materials to assign to chaos objects")]
+    public PhysicsMaterial[] chaosMaterials;
+    
+    [Tooltip("Reference to chaos manager (will find automatically if not set)")]
+    public ChaosManager chaosManager;
+
     //tracking
     private float timer;
     private List<GameObject> activeObjects = new List<GameObject>();
+    private int spawnCounter = 0;
     void Start()
-
     {
-
+        // Find chaos manager if not assigned
+        if (chaosManager == null)
+        {
+            chaosManager = FindObjectOfType<ChaosManager>();
+        }
     }
 
     void Update()
@@ -52,7 +75,7 @@ public class ProjectileSpawner : MonoBehaviour
         
     }
 
-        void SpawnAndFling()
+    void SpawnAndFling()
     {
         if (objectsToSpawn.Count == 0 || target == null)
             return;
@@ -64,6 +87,36 @@ public class ProjectileSpawner : MonoBehaviour
         //spawn object at spawner's position and rotation
         GameObject spawnedObj = Instantiate(objToSpawn, transform.position, transform.rotation);
         activeObjects.Add(spawnedObj);
+
+        // increment spawn counter for every other tracking
+        spawnCounter++;
+
+        // CHAOS LOGIC - Add ChaosObject component based on frequency
+        bool shouldAddChaos = ShouldSpawnAsChaos();
+        
+        if (shouldAddChaos)
+        {
+            // Check if it already has ChaosObject (from prefab)
+            ChaosObject chaosObj = spawnedObj.GetComponent<ChaosObject>();
+            
+            if (chaosObj == null)
+            {
+                // Add ChaosObject component if not present
+                chaosObj = spawnedObj.AddComponent<ChaosObject>();
+            }
+            
+            // Assign chaos materials if available
+            if (chaosMaterials != null && chaosMaterials.Length > 0)
+            {
+                chaosObj.chaosMaterials = chaosMaterials;
+            }
+            
+            // Notify chaos manager to refresh its object list
+            if (chaosManager != null)
+            {
+                chaosManager.RefreshChaosObjects();
+            }
+        }
 
         //calculate direction to target
         Vector3 direction = (target.position - transform.position).normalized;
@@ -77,6 +130,34 @@ public class ProjectileSpawner : MonoBehaviour
 
         //schedule destruction after lifetime
         Destroy(spawnedObj, objectLifeTime);
+    }
+
+    // Determine if this spawn should be a chaos object based on frequency setting
+    bool ShouldSpawnAsChaos()
+    {
+        switch (chaosFrequency)
+        {
+            case ChaosFrequency.None:
+                return false;
+            
+            case ChaosFrequency.All:
+                return true;
+            
+            case ChaosFrequency.EveryOther:
+                return spawnCounter % 2 == 0;
+            
+            case ChaosFrequency.Random25:
+                return Random.value < 0.25f;
+            
+            case ChaosFrequency.Random50:
+                return Random.value < 0.5f;
+            
+            case ChaosFrequency.Random75:
+                return Random.value < 0.75f;
+            
+            default:
+                return false;
+        }
     }
 
     //Visualize Gizmo --  draws line to player in editor to see targeting

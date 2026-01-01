@@ -11,8 +11,10 @@ public class ChaosObject : MonoBehaviour
     [Tooltip("check which effects this object can use")]
     public bool allowMaterialChange = true;
     public bool allowScaleChange = true;
-    public bool allowRotation = true;
+    public bool allowQuickSpin = true;
+    public bool allowFlip180 = true;
     public bool allowColorChange = true;
+    public bool allowDisappear = true;
     
     [Header("Effect Settings")]
     public float effectDuration = 5f;
@@ -23,7 +25,11 @@ public class ChaosObject : MonoBehaviour
     public float scaleMax = 1.4f;
     
     [Header("Rotation Settings")]
-    public float rotationSpeed = 45f; // degrees per second
+    public float spinDuration = 1f; // how long the spin takes
+    public float flipDuration = 0.5f; // how long the flip takes
+    
+    [Header("Disappear Settings")]
+    public float disappearWarningTime = 1f; // blink time before disappearing
     
     [Header("Visual Settings")]
     public Color chaosColorTint = new Color(1f, 0.5f, 0f, 1f); // orange tint
@@ -37,6 +43,7 @@ public class ChaosObject : MonoBehaviour
     // original values
     private PhysicsMaterial originalMaterial;
     private Vector3 originalScale;
+    private Quaternion originalRotation;
     private Color originalColor;
     private bool hasEmission;
     
@@ -53,6 +60,7 @@ public class ChaosObject : MonoBehaviour
         // store originals
         originalMaterial = objectCollider.sharedMaterial;
         originalScale = transform.localScale;
+        originalRotation = transform.rotation;
         
         if (objectRenderer != null)
         {
@@ -87,10 +95,14 @@ public class ChaosObject : MonoBehaviour
             availableEffects.Add(0);
         if (allowScaleChange)
             availableEffects.Add(1);
-        if (allowRotation)
+        if (allowQuickSpin)
             availableEffects.Add(2);
-        if (allowColorChange && objectRenderer != null)
+        if (allowFlip180)
             availableEffects.Add(3);
+        if (allowColorChange && objectRenderer != null)
+            availableEffects.Add(4);
+        if (allowDisappear)
+            availableEffects.Add(5);
         
         // if no effects enabled, bail out
         if (availableEffects.Count == 0)
@@ -111,10 +123,16 @@ public class ChaosObject : MonoBehaviour
                 currentEffectCoroutine = StartCoroutine(ScaleChangeEffect());
                 break;
             case 2:
-                currentEffectCoroutine = StartCoroutine(RotationEffect());
+                currentEffectCoroutine = StartCoroutine(QuickSpinEffect());
                 break;
             case 3:
+                currentEffectCoroutine = StartCoroutine(Flip180Effect());
+                break;
+            case 4:
                 currentEffectCoroutine = StartCoroutine(ColorChangeEffect());
+                break;
+            case 5:
+                currentEffectCoroutine = StartCoroutine(DisappearEffect());
                 break;
         }
     }
@@ -205,15 +223,18 @@ public class ChaosObject : MonoBehaviour
         Debug.Log($"chaos object {gameObject.name}: scale restored");
     }
     
-    // ===== ROTATION EFFECT =====
+    // ===== QUICK SPIN EFFECT (360 degree spin) =====
     
-    IEnumerator RotationEffect()
+    IEnumerator QuickSpinEffect()
     {
         hasActiveEffect = true;
         
-        // random rotation direction
-        Vector3 rotationAxis = Random.insideUnitSphere.normalized;
-        float randomSpeed = rotationSpeed * Random.Range(0.5f, 1.5f);
+        // choose random axis (mostly Y for platforms)
+        Vector3 spinAxis = Random.value > 0.7f ? Vector3.right : Vector3.up;
+        if (Random.value > 0.85f) spinAxis = Vector3.forward;
+        
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = startRot * Quaternion.AngleAxis(360f, spinAxis);
         
         // visual feedback
         if (objectRenderer != null)
@@ -221,15 +242,21 @@ public class ChaosObject : MonoBehaviour
             ApplyGlow(true);
         }
         
-        Debug.Log($"chaos object {gameObject.name}: rotating at {randomSpeed:F1} deg/s");
+        Debug.Log($"chaos object {gameObject.name}: quick spin on {spinAxis}");
         
+        // spin animation
         float elapsed = 0f;
-        while (elapsed < effectDuration)
+        while (elapsed < spinDuration)
         {
-            transform.Rotate(rotationAxis, randomSpeed * Time.deltaTime, Space.World);
             elapsed += Time.deltaTime;
+            float t = elapsed / spinDuration;
+            // ease in-out for smooth spin
+            float smoothT = t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, smoothT);
             yield return null;
         }
+        
+        transform.rotation = startRot; // return to original rotation
         
         if (objectRenderer != null)
         {
@@ -237,7 +264,67 @@ public class ChaosObject : MonoBehaviour
         }
         
         hasActiveEffect = false;
-        Debug.Log($"chaos object {gameObject.name}: rotation stopped");
+        Debug.Log($"chaos object {gameObject.name}: spin complete");
+    }
+    
+    // ===== FLIP 180 EFFECT =====
+    
+    IEnumerator Flip180Effect()
+    {
+        hasActiveEffect = true;
+        
+        // choose axis to flip on (usually forward or right for platforms)
+        Vector3 flipAxis = Random.value > 0.5f ? Vector3.forward : Vector3.right;
+        
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = startRot * Quaternion.AngleAxis(180f, flipAxis);
+        
+        // visual feedback
+        if (objectRenderer != null)
+        {
+            ApplyGlow(true);
+        }
+        
+        Debug.Log($"chaos object {gameObject.name}: flipping 180 on {flipAxis}");
+        
+        // flip animation
+        float elapsed = 0f;
+        while (elapsed < flipDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / flipDuration;
+            // ease in-out
+            float smoothT = t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, smoothT);
+            yield return null;
+        }
+        
+        transform.rotation = targetRot;
+        
+        // wait while flipped
+        yield return new WaitForSeconds(effectDuration - flipDuration * 2);
+        
+        // flip back
+        elapsed = 0f;
+        Quaternion flippedRot = transform.rotation;
+        while (elapsed < flipDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / flipDuration;
+            float smoothT = t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+            transform.rotation = Quaternion.Slerp(flippedRot, startRot, smoothT);
+            yield return null;
+        }
+        
+        transform.rotation = startRot;
+        
+        if (objectRenderer != null)
+        {
+            ApplyGlow(false);
+        }
+        
+        hasActiveEffect = false;
+        Debug.Log($"chaos object {gameObject.name}: flip complete");
     }
     
     // ===== COLOR CHANGE EFFECT =====
@@ -264,6 +351,57 @@ public class ChaosObject : MonoBehaviour
         
         hasActiveEffect = false;
         Debug.Log($"chaos object {gameObject.name}: color restored");
+    }
+    
+    // ===== DISAPPEAR EFFECT (blinks then disappears temporarily) =====
+    
+    IEnumerator DisappearEffect()
+    {
+        hasActiveEffect = true;
+        
+        Debug.Log($"chaos object {gameObject.name}: disappearing soon");
+        
+        // blink warning
+        float blinkInterval = 0.2f;
+        float warningElapsed = 0f;
+        bool isVisible = true;
+        
+        while (warningElapsed < disappearWarningTime)
+        {
+            warningElapsed += blinkInterval;
+            isVisible = !isVisible;
+            objectRenderer.enabled = isVisible;
+            objectCollider.enabled = isVisible;
+            yield return new WaitForSeconds(blinkInterval);
+        }
+        
+        // disappear completely
+        objectRenderer.enabled = false;
+        objectCollider.enabled = false;
+        
+        Debug.Log($"chaos object {gameObject.name}: disappeared");
+        
+        // stay disappeared
+        yield return new WaitForSeconds(effectDuration - disappearWarningTime);
+        
+        // reappear with blink
+        warningElapsed = 0f;
+        isVisible = false;
+        while (warningElapsed < disappearWarningTime)
+        {
+            warningElapsed += blinkInterval;
+            isVisible = !isVisible;
+            objectRenderer.enabled = isVisible;
+            objectCollider.enabled = isVisible;
+            yield return new WaitForSeconds(blinkInterval);
+        }
+        
+        // ensure fully visible
+        objectRenderer.enabled = true;
+        objectCollider.enabled = true;
+        
+        hasActiveEffect = false;
+        Debug.Log($"chaos object {gameObject.name}: reappeared");
     }
     
     // ===== VISUAL FEEDBACK HELPERS =====
@@ -307,13 +445,20 @@ public class ChaosObject : MonoBehaviour
         // restore everything
         objectCollider.sharedMaterial = originalMaterial;
         transform.localScale = originalScale;
+        transform.rotation = originalRotation;
         
         if (objectRenderer != null)
         {
+            objectRenderer.enabled = true;
             objectRenderer.GetPropertyBlock(propBlock);
             propBlock.SetColor("_Color", originalColor);
             propBlock.SetColor("_EmissionColor", Color.black);
             objectRenderer.SetPropertyBlock(propBlock);
+        }
+        
+        if (objectCollider != null)
+        {
+            objectCollider.enabled = true;
         }
         
         hasActiveEffect = false;

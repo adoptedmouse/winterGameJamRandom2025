@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(PlayerMovement))]
+[RequireComponent(typeof(PlayerController))]
 public class ChaosDebugHUD : MonoBehaviour
 {
     // Singleton Instance
@@ -15,7 +15,7 @@ public class ChaosDebugHUD : MonoBehaviour
     public Color textColor = new Color (1f, 0.8f, 0f); // Gold color
 
     // References
-    private PlayerMovement player;
+    private PlayerController player;
     private Rigidbody rb;
     private PlayerGrounded grounded;
     private PlayerInput input;
@@ -38,7 +38,7 @@ public class ChaosDebugHUD : MonoBehaviour
             return;
         }
 
-        player = GetComponent<PlayerMovement>();
+        player = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         grounded = GetComponent<PlayerGrounded>();
         input = GetComponent<PlayerInput>();
@@ -120,26 +120,12 @@ public class ChaosDebugHUD : MonoBehaviour
             return;
         }
 
-        RaycastHit hit;
-        // perform the raycast down 1.0f to get the material we are standing on
-        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out hit, 1.0f))
+        // Use the current surface from PlayerController (updated in PlayerGrounded)
+        groundMaterialName = player.currentSurface;
+        
+        if (string.IsNullOrEmpty(groundMaterialName))
         {
-            if (hit.collider != null)
-            {
-                Renderer rend = hit.collider.GetComponent<Renderer>();
-                if (rend != null && rend.sharedMaterial != null)
-                {
-                    groundMaterialName = rend.sharedMaterial.name;
-                }
-                else
-                {
-                    groundMaterialName = "Unknown";
-                }
-            }
-            else
-            {
-                groundMaterialName = "Unknown";
-            }
+            groundMaterialName = "Unknown";
         }
     }
 }

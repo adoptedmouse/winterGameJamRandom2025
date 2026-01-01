@@ -4,9 +4,9 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Hazard
   - Ice
   - Bouncy
+  - Hazard
   layers:
   - Default
   - TransparentFX
@@ -18,7 +18,7 @@ TagManager:
   - Wall
   - Obstacle
   - CHAOS
-  - Ice
+  - Hazard
   - 
   - 
   - 

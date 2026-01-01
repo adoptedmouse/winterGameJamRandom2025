@@ -11,6 +11,12 @@ public class ChaosManager : MonoBehaviour
     [Tooltip("how often object chaos triggers (seconds)")]
     public float objectChaosFrequency = 8f;
     
+    [Header("Chaos Toggles")]
+    [Tooltip("enable/disable player chaos effects")]
+    public bool enablePlayerChaos = true;
+    [Tooltip("enable/disable object chaos effects")]
+    public bool enableObjectChaos = true;
+    
     [Header("References")]
     [Tooltip("drag your player GameObject here")]
     public PlayerChaos playerChaos;
@@ -70,19 +76,26 @@ public class ChaosManager : MonoBehaviour
         
         while (true)
         {
-            // trigger player chaos
-            if (playerChaos != null)
+            // trigger player chaos only if enabled
+            if (enablePlayerChaos)
             {
-                playerChaos.TriggerRandomEffect();
-                
-                if (debugMode)
+                if (playerChaos != null)
                 {
-                    Debug.Log("chaos manager: player chaos triggered");
+                    playerChaos.TriggerRandomEffect();
+                    
+                    if (debugMode)
+                    {
+                        Debug.Log("chaos manager: player chaos triggered");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("chaos manager: playerChaos reference missing!");
                 }
             }
-            else
+            else if (debugMode)
             {
-                Debug.LogWarning("chaos manager: playerChaos reference missing!");
+                Debug.Log("chaos manager: player chaos skipped (disabled)");
             }
             
             // wait for next player chaos event
@@ -99,8 +112,15 @@ public class ChaosManager : MonoBehaviour
         
         while (true)
         {
-            // trigger chaos on all objects independently
-            TriggerObjectChaos();
+            // trigger chaos on all objects only if enabled
+            if (enableObjectChaos)
+            {
+                TriggerObjectChaos();
+            }
+            else if (debugMode)
+            {
+                Debug.Log("chaos manager: object chaos skipped (disabled)");
+            }
             
             // wait for next object chaos event
             yield return new WaitForSeconds(objectChaosFrequency);

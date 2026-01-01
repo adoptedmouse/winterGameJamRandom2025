@@ -16,17 +16,30 @@ public class RandomPlatformSpawner : MonoBehaviour
     public Material defaultMaterial;
     
     [Header("Chaos Settings")]
-    public bool addChaosComponent = true;
-    public PhysicsMaterial[] chaosMaterials; // Assign these to pass to ChaosObject
+    [Tooltip("How often spawned platforms should be chaos objects")]
+    public ChaosFrequency chaosFrequency = ChaosFrequency.None;
+    
+    [Tooltip("Chaos materials to assign to chaos objects")]
+    public PhysicsMaterial[] chaosMaterials;
+    
+    [Tooltip("Reference to chaos manager (will find automatically if not set)")]
+    public ChaosManager chaosManager;
 
     [Header("References")]
     public Transform startPoint; // Where to start spawning from (e.g., the island)
 
     private Vector3 currentSpawnPos;
+    private int platformCounter = 0;
 
     [ContextMenu("Spawn Platforms")]
     public void SpawnPlatforms()
     {
+        // Find chaos manager if not assigned
+        if (chaosManager == null)
+        {
+            chaosManager = FindObjectOfType<ChaosManager>();
+        }
+        
         if (startPoint != null)
             currentSpawnPos = startPoint.position;
         else
@@ -35,9 +48,18 @@ public class RandomPlatformSpawner : MonoBehaviour
         // Ensure we start slightly above the start point
         currentSpawnPos += Vector3.up * heightDifferenceMin;
 
+        // Reset counter for consistent pattern
+        platformCounter = 0;
+
         for (int i = 0; i < numberOfPlatformsToSpawn; i++)
         {
             SpawnSinglePlatform();
+        }
+        
+        // Refresh chaos manager after spawning all platforms
+        if (chaosManager != null && chaosFrequency != ChaosFrequency.None)
+        {
+            chaosManager.RefreshChaosObjects();
         }
     }
 
@@ -61,6 +83,7 @@ public class RandomPlatformSpawner : MonoBehaviour
         GameObject platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
         platform.name = "Platform_" + Random.Range(1000, 9999);
         platform.transform.position = new Vector3(nextPos.x, nextPos.y, nextPos.z);
+        platform.layer = LayerMask.NameToLayer("Ground");
         
         // Random Scale
         Vector3 scale = new Vector3(
@@ -84,10 +107,16 @@ public class RandomPlatformSpawner : MonoBehaviour
             r.material = m;
         }
 
-        // Add ChaosObject
-        if (addChaosComponent)
+        // Increment platform counter
+        platformCounter++;
+
+        // CHAOS LOGIC - Add ChaosObject component based on frequency
+        bool shouldAddChaos = ShouldSpawnAsChaos();
+        
+        if (shouldAddChaos)
         {
             ChaosObject chaos = platform.AddComponent<ChaosObject>();
+            
             // Assign chaos materials if available
             if (chaosMaterials != null && chaosMaterials.Length > 0)
             {
@@ -104,6 +133,34 @@ public class RandomPlatformSpawner : MonoBehaviour
         currentSpawnPos = platform.transform.position;
     }
 
+    // Determine if this spawn should be a chaos object based on frequency setting
+    bool ShouldSpawnAsChaos()
+    {
+        switch (chaosFrequency)
+        {
+            case ChaosFrequency.None:
+                return false;
+            
+            case ChaosFrequency.All:
+                return true;
+            
+            case ChaosFrequency.EveryOther:
+                return platformCounter % 2 == 0;
+            
+            case ChaosFrequency.Random25:
+                return Random.value < 0.25f;
+            
+            case ChaosFrequency.Random50:
+                return Random.value < 0.5f;
+            
+            case ChaosFrequency.Random75:
+                return Random.value < 0.75f;
+            
+            default:
+                return false;
+        }
+    }
+
     [ContextMenu("Clear Platforms")]
     public void ClearPlatforms()
     {
@@ -114,10 +171,18 @@ public class RandomPlatformSpawner : MonoBehaviour
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
         
-        // Reset spawn pos
+        // Reset spawn pos and counter
         if (startPoint != null)
             currentSpawnPos = startPoint.position;
         else
             currentSpawnPos = transform.position;
+            
+        platformCounter = 0;
+        
+        // Refresh chaos manager after clearing
+        if (chaosManager != null)
+        {
+            chaosManager.RefreshChaosObjects();
+        }
     }
 }
