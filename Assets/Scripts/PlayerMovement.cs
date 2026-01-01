@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -24,7 +25,11 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 moveDir;
     Vector3 airMomentum;
+    bool falling;
+    bool isGrounded;
     bool wasGrounded;
+    bool landing;
+    private RaycastHit hitData;
 
     void Awake()
     {
@@ -34,14 +39,35 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main.transform;
         animator = GetComponentInChildren<Animator>();
         rb.freezeRotation = true;
+        landing = false;
     }
 
     void Update()
     {
+        isGrounded = grounded.IsGrounded;
+        falling = IsFalling();
         moveDir = GetMoveDirection();
+        Vector3 origin = transform.position;
         float animSpeed = input.Move.magnitude;
+        bool isLanding = Physics.Raycast(origin, Vector3.down, out hitData, grounded.groundCheckRadius, grounded.groundLayer);
         animator.SetFloat("Speed", animSpeed, 0.1f, Time.fixedDeltaTime);
-        animator.SetBool("Grounded", grounded.IsGrounded);
+        animator.SetBool("Grounded", isGrounded);
+        animator.SetBool("Falling", falling);
+        if (falling && !landing)
+        {
+            if (isLanding)
+            {
+                animator.SetTrigger("Land");
+                landing = true;
+            }
+            
+        }
+
+        if (isGrounded && landing)
+        {
+            landing = false;
+        }
+        
     }
 
     void FixedUpdate()
@@ -93,6 +119,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             input.ConsumeJump();
+            animator.SetTrigger("Jump");
         }
 
         wasGrounded = grounded.IsGrounded;
@@ -115,5 +142,10 @@ public class PlayerMovement : MonoBehaviour
     Vector3 GetHorizontalVelocity()
     {
         return new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+    }
+
+    bool IsFalling()
+    {
+        return rb.linearVelocity.y < -0.01;
     }
 }
